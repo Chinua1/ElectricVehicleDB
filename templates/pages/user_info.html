@@ -1,0 +1,31 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Electric Vehicle - Welcome</title>
+{% endblock %}
+
+{% block body %}
+    <!-- Update Newly Registered Details -->
+    {% if user %}
+        <div class="container-fluid">
+            <div class="text-dark col-md-8 offset-md-2 mb-4"><strong><br>Welcome {{ user.email() }}</strong> <br><br>Please complete your registration by filling out the form, thank you.</div>
+            <form action="_base.html" method="POST" class="text-dark col-md-8 offset-md-2">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="user_firstname">First Name</label>
+                        <input type="text" class="form-control" id="user_firstname" name="user_firstname" placeholder="Enter Firstname">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="user_lastname">Last Name</label>
+                        <input type="text" class="form-control" id="user_lastname" name="user_lastname" placeholder="Enter Lastname">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6 offset-md-3 mt-3">
+                        <input type="submit" class="btn btn-block btn-outline-success" value="Update">
+                    </div>
+                </div>
+            </form>
+        </div>
+    {%  endif %}
+    {% endblock %}
