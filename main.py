@@ -7,6 +7,8 @@ import json
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from user import User
+from ev import ElectricVehicle
+from add_ev import AddEVPage
 
 start = os.path.dirname( __file__ )
 rel_path = os.path.join(start, 'templates')
@@ -114,6 +116,7 @@ class MainPage( webapp2.RequestHandler ):
 
 app = webapp2.WSGIApplication(
     [
-        webapp2.Route( r'/', handler=MainPage, name='home')
+        webapp2.Route( r'/', handler=MainPage, name='home'),
+        webapp2.Route( r'/add-electric-vehicle', handler=AddEVPage, name='add-electric-vehicle' )
     ], debug = True
 )
