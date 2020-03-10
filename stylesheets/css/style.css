@@ -73,6 +73,7 @@ main,
 .extended-main-view {
     height: calc(100% - 100px);
     margin-top: 20px;
+
     overflow-x: hidden;
     overflow-y: scroll;
 }
@@ -105,7 +106,7 @@ main,
 .form-header-label, .review-header-label {
     font-size: 30px;
     padding: 20px 0;
-    padding-top: 5px;
+    padding-top: 30px;
 }
 
 .review-rating {

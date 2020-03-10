@@ -10,6 +10,8 @@ from user import User
 from ev import ElectricVehicle
 from add_ev import AddEVPage
 from search_result import SearchResultPage
+from ev_details import EVDetailsPage
+from ev_details_operations import EditEVPage, DeleteEVRequest
 
 from global_variables import global_battery_size, global_cost_range, global_power_range, global_wltp_range
 
@@ -126,6 +128,9 @@ app = webapp2.WSGIApplication(
     [
         webapp2.Route( r'/', handler=MainPage, name='home'),
         webapp2.Route( r'/add-electric-vehicle', handler=AddEVPage, name='add-electric-vehicle' ),
-        webapp2.Route( r'/search-result', handler=SearchResultPage, name='search-result' )
+        webapp2.Route( r'/search-result', handler=SearchResultPage, name='search-result' ),
+        webapp2.Route( r'/electric-vehicles/<ev_key:[^/]+>', handler=EVDetailsPage, name='electric-vehicle-details' ),
+        webapp2.Route( r'/electric-vehicles/<ev_key:[^/]+>/edit', handler=EditEVPage, name='edit-electric-vehicle-details' ),
+        webapp2.Route( r'/electric-vehicles/<ev_key:[^/]+>/delete', handler=DeleteEVRequest, name='delete-electric-vehicle-record' )
     ], debug = True
 )

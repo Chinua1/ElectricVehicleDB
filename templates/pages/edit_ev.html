@@ -1,0 +1,66 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Electric Vehicle - Add Electric Vehicle Page</title>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="col-md-8 offset-md-2">
+            <div class="form-header-label text-dark">Edit EV</div>
+            <form action="/electric-vehicles/{{ ev_key }}/edit" method="POST" class="text-dark">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="ev_name">Name</label>
+                        <input type="text" class="form-control" value="{{ev.name}}" id="ev_name" name="ev_name" placeholder="C300">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="ev_manufacturer">Manufacturer</label>
+                        <input type="text" class="form-control" value="{{ev.manufacturer}}" id="ev_manufacturer" name="ev_manufacturer" placeholder="Mercedes Benz">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="ev_year">Year</label>
+                        <select type="year" class="form-control" id="ev_year" name="ev_year">
+                            {% set temp_year = year %}
+                            {% for i in range( 20 ) %}
+                                <option value="{{ temp_year }}"
+                                    {% if temp_year == ev.year %}
+                                        selected
+                                    {% endif %}
+                                > {{ temp_year }} </option>
+                                {% set temp_year = temp_year - 1 %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="ev_battery_size">Battery Size (Kwh)</label>
+                        <input type="number" min="0" value="{{ ev.battery_size }}"  class="form-control" id="ev_battery_size" name="ev_battery_size" placeholder="5">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="ev_wltp_range">WLTP range (Km)</label>
+                        <input type="number" min="0" value="{{ ev.wltp_range }}"  class="form-control" id="ev_wltp_range" name="ev_wltp_range" placeholder="1000">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="ev_cost">Cost (EUR)</label>
+                        <input type="number" min="0" value="{{ ev.cost }}" class="form-control" id="ev_cost" name="ev_cost" placeholder="10000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="ev_power">Power (Kw)</label>
+                        <input type="number" class="form-control" min="0" value="{{ ev.power }}" id="ev_power" name="ev_power" placeholder="15">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6 offset-md-3 mt-3">
+                        <input type="submit" class="btn btn-block btn-success" value="Update EV">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -7,7 +7,7 @@
 {% block body %}
 <div class="extended-main-view">
     {% if has_params %}
-        <div class="col-md-8 offset-md-2 search-result-label text-dark"><br>Search parameters: <br>
+        <div class="col-md-8 offset-md-2 search-result-label text-dark">Search parameters: <br>
             {% if search_params['name'] %}<span class="search-params-text">Name : {{search_params['name'] }}</span> <br>{% endif %}
             {% if search_params['manufacturer'] %}<span class="search-params-text">Manufacturer : {{search_params['manufacturer'] }}</span> <br>{% endif %}
             {% if search_params['year'] %}<span class="search-params-text">Year : {{search_params['year'] }}</span> <br>{% endif %}
