@@ -72,8 +72,7 @@ main,
 
 .extended-main-view {
     height: calc(100% - 100px);
-    margin-top: 100px;
-
+    margin-top: 20px;
     overflow-x: hidden;
     overflow-y: scroll;
 }
@@ -94,6 +93,8 @@ main,
 
 .search-result-label {
     font-size: 20px;
+    color: #1a73e8;
+
 }
 
 .search-header {
@@ -187,6 +188,10 @@ main,
 
     padding-left: 10px;
     font-size: larger;
+}
+
+.search-params-text {
+    color: #ff0000;
 }
 
 .search-button {

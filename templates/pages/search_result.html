@@ -1,0 +1,41 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Electric Vehicle - Search Result Page</title>
+{% endblock %}
+
+{% block body %}
+<div class="extended-main-view">
+    {% if has_params %}
+        <div class="col-md-8 offset-md-2 search-result-label text-dark"><br>Search parameters: <br>
+            {% if search_params['name'] %}<span class="search-params-text">Name : {{search_params['name'] }}</span> <br>{% endif %}
+            {% if search_params['manufacturer'] %}<span class="search-params-text">Manufacturer : {{search_params['manufacturer'] }}</span> <br>{% endif %}
+            {% if search_params['year'] %}<span class="search-params-text">Year : {{search_params['year'] }}</span> <br>{% endif %}
+            {% if search_params['power'][0] or search_params['power'][1] %}<span class="search-params-text">Power Range : {{search_params['power'][0] }} - {{search_params['power'][1] }}</span> <br>{% endif %}
+            {% if search_params['wltp_range'][0] or search_params['wltp_range'][1] %}<span class="search-params-text">WLTP Range : {{search_params['wltp_range'][0] }} - {{search_params['wltp_range'][1] }}</span> <br>{% endif %}
+            {% if search_params['battery_size'][0] or search_params['battery_size'][1] %}<span class="search-params-text">Battery Size Range : {{search_params['battery_size'][0] }} - {{search_params['battery_size'][1] }}</span> <br>{% endif %}
+            {% if search_params['cost'][0] or search_params['cost'][1] %}<span class="search-params-text">Cost Range : {{search_params['cost'][0] }} - {{search_params['cost'][1] }}</span> <br>{% endif %}
+        <span class="result-counter text-dark"> {{ search_list_length }} result found</span></div>
+    {% else %}
+        <div class="col-md-8 offset-md-2 search-result-label text-dark"><br>Search parameters not specified. All EVs returned<span class="result-counter"> {{ search_list_length }} result found:</span></div>
+    {% endif %}
+
+    {% if search_list_length == 0 %}
+        <div class="col-md-8 offset-md-2 search-result-label text-dark d-flex justify-content-center mt-5 pt-5">No EV found for this query.<span class="result-counter">click <a href="/">  &nbsp;&nbsp;here&nbsp;&nbsp;  </a> to go home</span></div>
+    {% endif %}
+
+
+    <ul class="col-md-8 offset-md-2 search-result-list text-dark">
+        {% for ev in search_list %}
+            <li class="result-item row">
+                <div class="col-md-12 item-summary">
+                    {% set url_list = [ '/electric-vehicles/', ev.key.id() ] %}
+                    <a class="item-link" href="{{ url_list|join('') }}">{{ ev.name }} {{ ev.manufacturer }}</a>
+                    <span class="item-data text-muted">Year: <span class="item-value text-dark">{{ ev.year }}</span></span>
+                    <span class="item-data text-muted">WLTP range: <span class="item-value text-dark">{{ ev.wltp_range }}</span></span>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

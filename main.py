@@ -9,6 +9,9 @@ from google.appengine.ext import ndb
 from user import User
 from ev import ElectricVehicle
 from add_ev import AddEVPage
+from search_result import SearchResultPage
+
+from global_variables import global_battery_size, global_cost_range, global_power_range, global_wltp_range
 
 start = os.path.dirname( __file__ )
 rel_path = os.path.join(start, 'templates')
@@ -77,7 +80,12 @@ class MainPage( webapp2.RequestHandler ):
             'params_key': params_key,
             'params_value': params_value,
             'has_params': has_params,
-            'show_logout': True
+            'show_logout': True,
+            'global_battery_size': global_battery_size,
+            'global_cost_range': global_cost_range,
+            'global_power_range': global_power_range,
+            'global_wltp_range': global_wltp_range,
+            'json_evs': json.dumps( [] )
         }
 
         if user and (not has_completed_profile):
@@ -117,6 +125,7 @@ class MainPage( webapp2.RequestHandler ):
 app = webapp2.WSGIApplication(
     [
         webapp2.Route( r'/', handler=MainPage, name='home'),
-        webapp2.Route( r'/add-electric-vehicle', handler=AddEVPage, name='add-electric-vehicle' )
+        webapp2.Route( r'/add-electric-vehicle', handler=AddEVPage, name='add-electric-vehicle' ),
+        webapp2.Route( r'/search-result', handler=SearchResultPage, name='search-result' )
     ], debug = True
 )

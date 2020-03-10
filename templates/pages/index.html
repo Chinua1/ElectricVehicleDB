@@ -5,5 +5,83 @@
 {% endblock %}
 
 {% block body %}
-
+    <div class="col-md-8 offset-md-2 search-header text-dark">Search EV</div>
+    <form class="col-md-8 offset-md-2 text-dark" action="/search-result" method="GET">
+        <div class="form-row">
+            <div class="form-group col-md-12 pr-3 pl-3 pb-3">
+                <label for="ev_power">Name</label>
+                <input type="search" class="form-control" id="ev_name" name="ev_name" placeholder="C300">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6 pr-3 pl-3 pb-3">
+                <label for="ev_manufacturer">Manufacturer</label>
+                <input type="text" class="form-control" id="ev_manufacturer" name="ev_manufacturer" placeholder="Mercedes Benz">
+            </div>
+            <div class="form-group col-md-6 pr-3 pl-3 pb-3">
+                <label for="ev_year">Year</label>
+                <select type="year" class="form-control" id="ev_year" name="ev_year">
+                    <option value="" disabled selected>Select Year</option>
+                    {% set temp_year = year %}
+                    {% for i in range( 50 ) %}
+                        <option value="{{ temp_year }}"> {{ temp_year }} </option>
+                        {% set temp_year = temp_year - 1 %}
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="ev_power">Power Range ( {{ global_power_range[0] }} - {{ global_power_range[1] }} Kw )</label>
+                <div class="row border pr-1 pl-1 pb-1 pt-1 mr-1 ml-1">
+                    <div class="col-6">
+                        <input type="number" min="0" value="0" class="form-control" id="ev_power_lower" name="ev_power_lower" placeholder="10">
+                    </div>
+                    <div class="col-6">
+                        <input type="number" min="0" value="0" class="form-control" id="ev_power_upper" name="ev_power_upper" placeholder="1000">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="ev_battery_size">Battery Size Range ( {{ global_battery_size[0] }} - {{ global_battery_size[1] }} Kwh )</label>
+                <div class="row border pr-1 pl-1 pb-1 pt-1 mr-1 ml-1">
+                    <div class="col-6">
+                        <input type="number" min="0" value="0" class="form-control" id="ev_battery_size_lower" name="ev_battery_size_lower" placeholder="10">
+                    </div>
+                    <div class="col-6">
+                        <input type="number" min="0" value="0" class="form-control" id="ev_battery_size_upper" name="ev_battery_size_upper" placeholder="1000">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="ev_wltp_range">WLTP Range ( {{ global_wltp_range[0] }} - {{ global_wltp_range[1] }} Km )</label>
+                <div class="row border pr-1 pl-1 pb-1 pt-1 mr-1 ml-1">
+                    <div class="col-6">
+                        <input type="number" min="0" value="0" class="form-control" id="ev_wltp_range_lower" name="ev_wltp_range_lower" placeholder="10">
+                    </div>
+                    <div class="col-6">
+                        <input type="number" min="0" value="0" class="form-control" id="ev_wltp_range_upper" name="ev_wltp_range_upper" placeholder="1000">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="ev_cost">Cost Range ( {{ global_cost_range[0] }} - {{ global_cost_range[1] }} EUR )</label>
+                <div class="row border pr-1 pl-1 pb-1 pt-1 mr-1 ml-1">
+                    <div class="col-6">
+                        <input type="number" min="0" value="0" class="form-control" id="ev_cost_lower" name="ev_cost_lower" placeholder="10">
+                    </div>
+                    <div class="col-6">
+                        <input type="number" min="0" value="0" class="form-control" id="ev_cost_upper" name="ev_cost_upper" placeholder="1000">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6 offset-md-3 mt-3 d-flex justify-content-end">
+                <input type="submit" class="btn btn-block btn-outline-success" name="button" value="EV Search" />
+            </div>
+        </div>
+    </form>
 {% endblock %}
