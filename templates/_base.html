@@ -38,6 +38,10 @@
                                 <a class="nav-link" href="/add-electric-vehicle">Add EV</a>
                             </li>
                         {% endif %}
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/compare-electric-vehicles">Compare EVs</a>
+                        </li>
                     </ul>
 
                     <ul class="navbar-nav justify-content-end">
@@ -56,6 +60,8 @@
                 </div>
             </div>
         </nav>
+
+        <input type="hidden" id="json_evs" value="{{ json_evs }}">
     </header>
     <main style="padding-top: 60px !important;">
         {% if has_params %}
@@ -76,14 +82,183 @@
                 </button>
             </div>
             {% endif %}
-        {% endif%}
+        {% endif %}
         {% block body %}{% endblock %}
     </main>
     <footer>&copy; {{ year }}, all right reserved Electric Vehicles</footer>
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script> -->
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="/stylesheets/vendor/fontawesome/js/fontawesome.min.js"></script>
     <script src="/stylesheets/js/index.js"></script>
+    <script>
+        $(document).ready(() => {
+            const jsonEVs = JSON.parse( document.getElementById('json_evs').value );
+
+            $("#compared_counter").on('change', (e) => {
+                const selectCount = parseInt( e.target.value )
+                let formElement = getFormHeader();
+                const formGroupClass = ( selectCount == 2 || selectCount == 4 ) ? "form-group col-md-6" : "form-group col-md-4";
+
+                if (selectCount < 2 || e.target.value == '') {
+                    $("#compared_counter_error").text("You CANNOT compare less than 2 EVs.")
+                    $("#comparison-select-container").html('')
+                    return;
+                }
+
+                for (let i=0; i<selectCount; i++) {
+                    formElement += generateSelectInput( jsonEVs, i, formGroupClass )
+                }
+
+                formElement += getFormSubmitButton();
+
+                $("#comparison-select-container").html(formElement)
+                const selects = document.querySelectorAll("select");
+                for (j=0; j<selects.length; j++) {
+                    selects[j].addEventListener( 'change', handleSelectChangeEvent, false );
+                }
+            })
+
+            $("#compared_counter").on('focus', (e) => {
+                $("#compared_counter_error").text("")
+            })
+
+            $("form#comparison-select-container").on('submit', (e) => {
+                e.preventDefault();
+                const selects = document.querySelectorAll("select");
+                let selectsValues = '';
+                for (j=0; j<selects.length; j++) {
+                    selectsValues += "-"+selects[j].value ;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/compare-electric-vehicles',
+                    contentType: 'application/json',
+                    data: { keys: selectsValues },
+                    dataType: 'json',
+                    success: function(data){
+                        if ( data.code === 200 ) {
+                            const compareTable = generateCompareTable( jsonEVs, data.unique_keys, data.responseData );
+                            $("#comparison-result-container").html(compareTable);
+                        }
+
+                        if ( data.code === 400 ) {
+                            console.log(data);
+                            let queryString = '?failed="' + data.message + '"';
+                            location.href = '/compare-electric-vehicles' + queryString;
+                        }
+                    },
+                    error: function(data, textStatus, errorThrown) {
+                        console.log(data);
+                    }
+                });
+            })
+
+            function generateCompareTable( jsonEVs, keys, maxMin ) {
+                const evs = getEVs( jsonEVs, keys );
+                let tableHtml = `<div class="form-header-label text-dark" style="width:100% !important;">Comparison Result</div><table class="table text-dark"><thead>`;
+
+                tableHtml += getRowData('#', evs, maxMin);
+
+                tableHtml += `</thead><tbody>`;
+
+                tableHtml += getRowData('manufacturer', evs, maxMin);
+
+                tableHtml += getRowData('year', evs, maxMin);
+
+                tableHtml += getRowData('power', evs, maxMin);
+
+                tableHtml += getRowData('wltp_range', evs, maxMin);
+
+                tableHtml += getRowData('battery_size', evs, maxMin);
+
+                tableHtml += getRowData('cost', evs, maxMin);
+
+                tableHtml += `</tbody></table>`;
+                return tableHtml;
+            }
+
+            function getRowData(rowH, evs, maxMin) {
+                return `<tr><th scope="${rowH === '#' ? 'col' : 'row'}">${rowH}</th>${setRowDat(rowH, evs, maxMin)}</tr>`;
+            }
+
+            function setRowDat(rowH, evs, maxMin) {
+                let rowData = '';
+                for (let j=0; j<evs.length; j++) {
+                    if (rowH === '#') {
+                        rowData += `<th scope="col"><a href="${'/electric-vehicles/' + evs[j].id}">${evs[j].name}</a></th>`;
+                    } else {
+                        if (rowH === 'manufacturer') {
+                            rowData += `<td>${evs[j].manufacturer}</td>`;
+                        } else if (rowH === 'year') {
+                            rowData += `<td class="${evs[j].id == maxMin[0].year[0] ? 'text-success' : ''} ${evs[j].id == maxMin[0].year[1] ? 'text-danger' : ''}">${evs[j].year}</td>`;
+                        } else if (rowH === 'power') {
+                            rowData += `<td class="${evs[j].id == maxMin[0].power[0] ? 'text-success' : ''} ${evs[j].id == maxMin[0].power[1] ? 'text-danger' : ''}">${evs[j].power}</td>`;
+                        } else if (rowH === 'wltp_range') {
+                            rowData += `<td class="${evs[j].id == maxMin[0].wltp_range[0] ? 'text-success' : ''} ${evs[j].id == maxMin[0].wltp_range[1] ? 'text-danger' : ''}">${evs[j].wltp_range}</td>`;
+                        } else if (rowH === 'battery_size') {
+                            rowData += `<td class="${evs[j].id == maxMin[0].battery_size[0] ? 'text-success' : ''} ${evs[j].id == maxMin[0].battery_size[1] ? 'text-danger' : ''}">${evs[j].battery_size}</td>`;
+                        } else if (rowH === 'cost') {
+                            rowData += `<td class="${evs[j].id == maxMin[0].cost[0] ? 'text-danger' : ''} ${evs[j].id == maxMin[0].cost[1] ? 'text-success' : ''}">${evs[j].cost}</td>`;
+                        }
+                    }
+                }
+                return rowData;
+            }
+
+            function getEVs( jsonEVs, keys ) {
+                const evs = [];
+                for (let i=0; i<keys.length; i++) {
+                    for (let j=0; j<jsonEVs.length; j++) {
+                        if (Math.abs(parseInt(keys[i], 10)) == Math.abs(parseInt(jsonEVs[j].id, 10))) {
+                            evs.push(jsonEVs[j]);
+                            break;
+                        }
+                    }
+                }
+                return evs;
+            }
+
+            // Check index change for select inputs
+            function handleSelectChangeEvent(e) {
+                let canCompare = true;
+                const selects = document.querySelectorAll("select");
+                for (j=0; j<selects.length; j++) {
+                    if (selects[j].value === '') {
+                        canCompare = false;
+                    }
+                }
+
+                if (canCompare) {
+                    $("#compare_evs").attr('disabled', false);
+                } else {
+                    $("#compare_evs").attr('disabled', true);
+                }
+            }
+
+            function generateSelectInput( jsonEVs, index, formGroupClass ) {
+                let options = getSelectOptions(jsonEVs);
+                return `<div class="${formGroupClass}"><select class="form-control" name="${'ev_compare_'+index}" id="${'ev_compare_'+index}">${options}</select> </div>`;
+            }
+
+            function getSelectOptions(jsonEVs) {
+                let options = `<option value="" disabled selected>Select Ev</option>`;
+                jsonEVs.map( ev => {
+                    options += `<option value="${ev.id}">${ev.name} (${ev.manufacturer})</option>`;
+                });
+                return options;
+            }
+
+            function getFormHeader() {
+                return `<div style="width: 100% !important;"><div class="form-group col-md-12"><label class="d-flex justify-content-center">Complete all select option with EVs to be compared.</label></div></div>`;
+            }
+
+            function getFormSubmitButton() {
+                return `<div style="width: 100% !important;"><div class="form-group col-md-12 d-flex justify-content-center"><button type="submit" disabled id="compare_evs" class="btn btn-sm btn-success">Compare</button></div></div>`;
+            }
+        })
+    </script>
 </body>
 </html>

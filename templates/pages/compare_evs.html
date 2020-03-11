@@ -1,0 +1,30 @@
+{% extends '_base.html' %}
+
+{% block title %}
+    <title>Electric Vehicle - Compare EVs Page</title>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="form-header-label text-dark">Compare EVs</div>
+                <div class="container-fluid text-dark">
+                    <div class="row">
+                        <div class="form-group col-md-6 offset-md-3">
+                            <label for="compared_counter">Enter the number of EVs to be compared and hit enter:</label>
+                            <input type="number" class="form-control" min="2" id="compared_counter" name="compared_counter" placeholder="Number > 1 e.g 2">
+                            <small id="compared_counter_error" class="form-text text-danger"></small>
+                        </div>
+                    </div>
+                </div>
+                <form class="text-dark form-row" id="comparison-select-container">
+
+                </form>
+                <div class="container-fluid">
+                    <div class="row" id="comparison-result-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
