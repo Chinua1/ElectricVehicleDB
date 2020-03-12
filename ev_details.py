@@ -2,11 +2,13 @@ import webapp2
 import jinja2
 import os
 import datetime
+import json
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from user import User
 from ev import ElectricVehicle
+from review import Review
 
 start = os.path.dirname( __file__ )
 rel_path = os.path.join(start, 'templates')
@@ -84,8 +86,40 @@ class EVDetailsPage( webapp2.RequestHandler ):
             'has_params': has_params,
             'show_logout': True,
             'ev_key': ev_key,
-            'ev': selected_ev
+            'ev': selected_ev,
+            'hasReviews': len( selected_ev.reviews ) > 0,
+            'reviews': selected_ev.reviews,
+            'json_evs': json.dumps( [] )
         }
 
         template = JINJA_ENVIRONMENT.get_template( 'pages/ev_details.html' )
         self.response.write( template.render( template_values ) )
+
+    def post( self, ev_key):
+        self.response.headers[ 'Content-Type' ] = 'text/html'
+
+        user = users.get_current_user()
+        logged_user_key = ndb.Key( 'User', user.user_id() )
+        logged_user = logged_user_key.get()
+
+        author_name = logged_user.firstname + " " + logged_user.lastname
+        review = self.request.get( 'ev_review' )
+        rating = int(self.request.get( 'ev_rating' )) if self.request.get( 'ev_rating' ) != '' else 0
+
+        if review == '' or rating == 0 or rating == None or rating == '' :
+            url = '/electric-vehicles/' + ev_key
+            self.redirect( url )
+            return
+        else:
+            selected_ev = None
+            ev_list = ElectricVehicle.query().fetch( keys_only = True )
+            for item in ev_list:
+                if str( item.id() ) == ev_key:
+                    selected_ev = item.get()
+                    break
+            new_review = Review( body=review, rating=rating, author_name=author_name )
+            selected_ev.reviews.append( new_review )
+            selected_ev.put()
+            url = '/electric-vehicles/' + ev_key
+            self.redirect( url )
+            return

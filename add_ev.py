@@ -2,6 +2,7 @@ import webapp2
 import jinja2
 import os
 import datetime
+import json
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -53,7 +54,8 @@ class AddEVPage( webapp2.RequestHandler ):
             'params_key': params_key,
             'params_value': params_value,
             'has_params': has_params,
-            'show_logout': False
+            'show_logout': False,
+            'json_evs': json.dumps( [] )
         }
 
         template = JINJA_ENVIRONMENT.get_template( 'pages/add_ev.html' )
@@ -72,17 +74,12 @@ class AddEVPage( webapp2.RequestHandler ):
         ev_power = int( self.request.get( 'ev_power' ) )
 
         if ev_name == '' or ev_manufacturer == '' or ev_year == '' or ev_battery_size == 0 or ev_cost == 0 or ev_power == 0:
-            err_msg = 'Failed to add EV, please complete all required fields"'
+            err_msg = 'Failed to add EV, please complete all required field"'
             query_string = '?failed="' + err_msg
             url = '/add-electric-vehicle' + query_string
             self.redirect( url )
             return
         else:
-            user = users.get_current_user()
-
-            logged_user_key = ndb.Key( 'User', user.user_id() )
-            logged_user = logged_user_key.get()
-
             ev = ElectricVehicle( name = ev_name, manufacturer = ev_manufacturer, year = ev_year, battery_size = ev_battery_size, wltp_range = ev_wltp_range, cost = ev_cost, power = ev_power )
 
             entity = ElectricVehicle.query( ElectricVehicle.name == ev_name, ElectricVehicle.manufacturer == ev_manufacturer, ElectricVehicle.year == ev_year ).fetch()
@@ -96,6 +93,4 @@ class AddEVPage( webapp2.RequestHandler ):
                     return
 
             ev.put()
-            logged_user.evs.append( ev )
-            logged_user.put()
             self.redirect( '/?success="EV successfully added."' )

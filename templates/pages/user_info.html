@@ -9,7 +9,7 @@
     {% if user %}
         <div class="container-fluid">
             <div class="text-dark col-md-8 offset-md-2 mb-4"><strong><br><br>Welcome {{ user.email() }}</strong> <br><br>Please complete your registration by filling out the form, thank you.</div>
-            <form action="_base.html" method="POST" class="text-dark col-md-8 offset-md-2">
+            <form action="/" method="POST" class="text-dark col-md-8 offset-md-2">
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="user_firstname">First Name</label>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6 offset-md-3 mt-3">
-                        <input type="submit" class="btn btn-block btn-outline-success" value="Update">
+                        <input type="submit" class="btn btn-block btn-outline-success" name="button" value="Update">
                     </div>
                 </div>
             </form>

@@ -1,4 +1,5 @@
 from google.appengine.ext import ndb
+from review import Review
 
 class ElectricVehicle( ndb.Model ):
     name = ndb.StringProperty()
@@ -8,3 +9,4 @@ class ElectricVehicle( ndb.Model ):
     wltp_range = ndb.IntegerProperty()
     cost = ndb.FloatProperty()
     power = ndb.IntegerProperty()
+    reviews = ndb.StructuredProperty( Review, repeated = True )

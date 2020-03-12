@@ -48,9 +48,81 @@
                     </tbody>
                 </table>
 
+                {% if user %}
+                <form class="mt-5" action="/electric-vehicles/{{ev_key}}" method="POST">
+                  <div class="form-row">
+                      <div class="form-group col-md-12">
+                          <label class="font-weight-bold" for="ev_review">Post a review</label>
+                          <textarea class="form-control" maxlength="1000" id="ev_review" name="ev_review" placeholder="Write your review ..."></textarea>
+                      </div>
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group col-md-6">
+                          <select class="form-control" name="ev_rating" id="ev_rating">
+                              <option value="">Select Rating</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                              <option value="6">6</option>
+                              <option value="7">7</option>
+                              <option value="8">8</option>
+                              <option value="9">9</option>
+                              <option value="10">10</option>
+                          </select>
+                      </div>
+                      <div class="form-group col-md-6 d-flex justify-content-end">
+                          <button type="submit" class="btn btn-sm btn-outline-success">Post</button>
+                      </div>
+                  </div>
+              </form>
+            {% endif%}
 
-
-
+              <div class="review-header-label border-bott text-dark">Reviews
+                {% if hasReviews %}
+                  <!-- <span class="review-rating">Average Rating 3.6</span> -->
+                {% endif %}
+              </div>
+              <ul class="review-list">
+                {% if not hasReviews %}
+                  <li class="review-item">
+                    <div class="review-summary">
+                      <div class="col-12 d-flex justify-content-center">
+                          <strong style="font-size: 22px; margin-top: 50px;">No Reviews</strong>
+                      </div>
+                  </div>
+                  </li>
+                {% else %}
+                  {% for review in reviews%}
+                    <li class="review-item">
+                      <div class="review-summary">
+                          <div class="col-12">
+                              {{ review.body }}
+                          </div>
+                          <div class="col-12 mt-3 author">
+                              By <span class="author-name">{{ review.author_name }}</span> Rating:
+                              <fieldset class="rate">
+                                {% set num_star = (review.rating / 2)|int %}
+                                {% set half_star = (review.rating % 2) + num_star %}
+                                {% for i in range(0, 5)%}
+                                  {% if i < num_star %}
+                                    <span class="full-star"></span>
+                                  {% else %}
+                                    {% if i < half_star %}
+                                      <span class="half-star"></span>
+                                    {% else %}
+                                      <span class="star"></span>
+                                    {% endif %}
+                                  {% endif %}
+                                {% endfor %}
+                             </fieldset>
+                          </div>
+                        </div>
+                    </li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
             </div>
         </div>
     </div>

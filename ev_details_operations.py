@@ -2,6 +2,7 @@ import webapp2
 import jinja2
 import os
 import datetime
+import json
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -34,14 +35,6 @@ class EditEVPage( webapp2.RequestHandler ):
         params_key = ''
         params_value = ''
 
-        try:
-            if self.request.params.get('failed') != None:
-                has_params = True
-                params_key = 'failed'
-                params_value = self.request.params.get('failed')
-        except:
-            pass
-
         selected_ev = None
         ev_list = ElectricVehicle.query().fetch( keys_only = True )
         for item in ev_list:
@@ -62,7 +55,8 @@ class EditEVPage( webapp2.RequestHandler ):
             'has_params': has_params,
             'show_logout': False,
             'ev_key': ev_key,
-            'ev': selected_ev
+            'ev': selected_ev,
+            'json_evs': json.dumps( [] )
         }
 
         template = JINJA_ENVIRONMENT.get_template( 'pages/edit_ev.html' )
