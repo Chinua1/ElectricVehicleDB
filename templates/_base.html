@@ -96,6 +96,8 @@
         $(document).ready(() => {
             const jsonEVs = JSON.parse( document.getElementById('json_evs').value );
 
+            console.log(jsonEVs);
+
             $("#compared_counter").on('change', (e) => {
                 const selectCount = parseInt( e.target.value )
                 let formElement = getFormHeader();
@@ -176,6 +178,8 @@
 
                 tableHtml += getRowData('cost', evs, maxMin);
 
+                tableHtml += getRowData('average rating', evs, maxMin);
+
                 tableHtml += `</tbody></table>`;
                 return tableHtml;
             }
@@ -202,10 +206,66 @@
                             rowData += `<td class="${evs[j].id == maxMin[0].battery_size[0] ? 'text-success' : ''} ${evs[j].id == maxMin[0].battery_size[1] ? 'text-danger' : ''}">${evs[j].battery_size}</td>`;
                         } else if (rowH === 'cost') {
                             rowData += `<td class="${evs[j].id == maxMin[0].cost[0] ? 'text-danger' : ''} ${evs[j].id == maxMin[0].cost[1] ? 'text-success' : ''}">${evs[j].cost}</td>`;
+                        } else if (rowH === 'average rating') {
+                            const avg_rating_list = computeAverageRating(evs);
+                            const ratingMaxMin = [getMaxID( avg_rating_list ), getMinID( avg_rating_list )];
+                            rowData += `<td class="${evs[j].id == ratingMaxMin[0] ? 'text-success' : ''} ${evs[j].id == ratingMaxMin[1] ? 'text-danger' : ''}">${avg_rating_list[j].avg_rating}</td>`;
+
                         }
                     }
                 }
                 return rowData;
+            }
+
+            function getMaxID( avg_rating_list ) {
+                let max = null;
+                for(let i=0; i<avg_rating_list.length; i++) {
+                    if (i === 0) {
+                        max = 0;
+                    } else {
+                        if (avg_rating_list[max].avg_rating < avg_rating_list[i].avg_rating) {
+                            max = i;
+                        }
+                    }
+                }
+                return avg_rating_list[max].id;
+            }
+
+            function getMinID( avg_rating_list ) {
+                let min = null;
+                for(let i=0; i<avg_rating_list.length; i++) {
+                    if (i === 0) {
+                        min = 0;
+                    } else {
+                        if (avg_rating_list[min].avg_rating > avg_rating_list[i].avg_rating) {
+                            min = i;
+                        }
+                    }
+                }
+                return avg_rating_list[min].id;
+            }
+
+            function computeAverageRating(evs) {
+                const avg_ratin = [];
+
+                evs.map( (ev) => {
+                    let sum = 0
+                    ev.reviews.map( (review) => {
+                        sum += review.rating;
+                    });
+
+                    const temp= {};
+                    temp.id = ev.id;
+                    if (ev.reviews.length != 0) {
+                        temp.avg_rating = parseFloat(sum/ev.reviews.length).toFixed(1);
+                    } else {
+                        temp.avg_rating = 0
+                    }
+
+                    avg_ratin.push( temp );
+                });
+
+                return avg_ratin;
             }
 
             function getEVs( jsonEVs, keys ) {

@@ -81,7 +81,7 @@
 
               <div class="review-header-label border-bott text-dark">Reviews
                 {% if hasReviews %}
-                  <!-- <span class="review-rating">Average Rating 3.6</span> -->
+                <span class="review-rating">Average Rating &nbsp;&nbsp; <strong>{{ review_rating_avg|round(1, 'floor') }}</strong></span>
                 {% endif %}
               </div>
               <ul class="review-list">

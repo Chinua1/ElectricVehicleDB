@@ -67,11 +67,11 @@ class AddEVPage( webapp2.RequestHandler ):
         # Get form input data
         ev_name = self.request.get( 'ev_name' )
         ev_manufacturer = self.request.get( 'ev_manufacturer' )
-        ev_year = self.request.get( 'ev_year' ) if  self.request.get( 'ev_year' ) == '' else int( self.request.get( 'ev_year' ) )
-        ev_battery_size = int( self.request.get( 'ev_battery_size' ) )
-        ev_wltp_range = int( self.request.get( 'ev_wltp_range' ) )
-        ev_cost = float( self.request.get( 'ev_cost' ) )
-        ev_power = int( self.request.get( 'ev_power' ) )
+        ev_year = 0 if  self.request.get( 'ev_year' ) == '' else int( self.request.get( 'ev_year' ) )
+        ev_battery_size = 0 if  self.request.get( 'ev_battery_size' ) == '' else int( self.request.get( 'ev_battery_size' ) )
+        ev_wltp_range = 0 if  self.request.get( 'ev_wltp_range' ) == '' else int( self.request.get( 'ev_wltp_range' ) )
+        ev_cost = 0.0 if  self.request.get( 'ev_cost' ) == '' else float( self.request.get( 'ev_cost' ) )
+        ev_power = 0 if  self.request.get( 'ev_power' ) == '' else int( self.request.get( 'ev_power' ) )
 
         if ev_name == '' or ev_manufacturer == '' or ev_year == '' or ev_battery_size == 0 or ev_cost == 0 or ev_power == 0:
             err_msg = 'Failed to add EV, please complete all required field"'

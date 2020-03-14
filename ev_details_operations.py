@@ -35,6 +35,15 @@ class EditEVPage( webapp2.RequestHandler ):
         params_key = ''
         params_value = ''
 
+        try:
+            if self.request.params.get('failed') != None:
+                has_params = True
+                params_key = 'failed'
+                params_value = self.request.params.get('failed')
+        except:
+            pass
+
+
         selected_ev = None
         ev_list = ElectricVehicle.query().fetch( keys_only = True )
         for item in ev_list:

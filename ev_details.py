@@ -1,3 +1,4 @@
+from __future__ import division
 import webapp2
 import jinja2
 import os
@@ -73,6 +74,13 @@ class EVDetailsPage( webapp2.RequestHandler ):
                 selected_ev = item.get()
                 break
 
+        review_rating_avg = 0
+        rating_list = []
+        for n in range(0, len(selected_ev.reviews)):
+            rating_list.append(selected_ev.reviews[n].rating)
+        if len(selected_ev.reviews) > 0:
+            review_rating_avg = sum(rating_list) / len(selected_ev.reviews)
+
         template_values = {
             'url': url,
             'url_string': url_string,
@@ -88,7 +96,8 @@ class EVDetailsPage( webapp2.RequestHandler ):
             'ev_key': ev_key,
             'ev': selected_ev,
             'hasReviews': len( selected_ev.reviews ) > 0,
-            'reviews': selected_ev.reviews,
+            'reviews': self.reverseReviews( selected_ev.reviews ),
+            'review_rating_avg': review_rating_avg,
             'json_evs': json.dumps( [] )
         }
 
@@ -123,3 +132,6 @@ class EVDetailsPage( webapp2.RequestHandler ):
             url = '/electric-vehicles/' + ev_key
             self.redirect( url )
             return
+
+    def reverseReviews( self, reviews ):
+        return reversed(reviews)
