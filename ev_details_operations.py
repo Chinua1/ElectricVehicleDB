@@ -51,6 +51,7 @@ class EditEVPage( webapp2.RequestHandler ):
                 selected_ev = item.get()
                 break
 
+
         template_values = {
             'url': url,
             'url_string': url_string,
@@ -90,6 +91,17 @@ class EditEVPage( webapp2.RequestHandler ):
             self.redirect( url )
             return
         else:
+
+            entity = ElectricVehicle.query( ElectricVehicle.name == ev_name, ElectricVehicle.manufacturer == ev_manufacturer, ElectricVehicle.year == ev_year ).fetch()
+
+            if len( entity ) > 0:
+                if entity[0].name and entity[0].manufacturer and entity[0].year:
+                    err_msg = 'EV already exists.'
+                    query_string = '?failed="' + err_msg
+                    url = '/add-electric-vehicle' + query_string
+                    self.redirect( url )
+                    return
+
             ev = None
             ev_list = ElectricVehicle.query().fetch( keys_only = True )
             for item in ev_list:
@@ -109,6 +121,8 @@ class EditEVPage( webapp2.RequestHandler ):
             url = '/electric-vehicles/' + ev_key + '' + query_string
             self.redirect( url )
 
+
+
 class DeleteEVRequest( webapp2.RequestHandler ):
     def post( self, ev_key ):
         ev = None
@@ -117,6 +131,7 @@ class DeleteEVRequest( webapp2.RequestHandler ):
             if str( item.id() ) == ev_key:
                 ev = item
                 break
+
 
         ev.delete()
         query_string = '?success="EV successfully deleted."'
