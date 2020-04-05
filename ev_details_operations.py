@@ -94,14 +94,6 @@ class EditEVPage( webapp2.RequestHandler ):
 
             entity = ElectricVehicle.query( ElectricVehicle.name == ev_name, ElectricVehicle.manufacturer == ev_manufacturer, ElectricVehicle.year == ev_year ).fetch()
 
-            if len( entity ) > 0:
-                if entity[0].name and entity[0].manufacturer and entity[0].year:
-                    err_msg = 'EV already exists.'
-                    query_string = '?failed="' + err_msg
-                    url = '/add-electric-vehicle' + query_string
-                    self.redirect( url )
-                    return
-
             ev = None
             ev_list = ElectricVehicle.query().fetch( keys_only = True )
             for item in ev_list:
